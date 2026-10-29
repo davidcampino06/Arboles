@@ -1,139 +1,149 @@
 """
-Parqueadero por placas con Árbol Binario de Búsqueda.
-Backend: Python + Flask.  Frontend: HTML + CSS (sin JavaScript).
+License plate parking lot using a Binary Search Tree.
+Backend: Python + Flask.  Frontend: HTML + CSS (no JavaScript).
 
-Ejecutar:
-    pip install flask
+Run:
+    pip install -r requirements.txt
     python app.py
-Luego abrir en el navegador: http://127.0.0.1:5000
+Then open in the browser: http://127.0.0.1:5000
 """
 import re
 from flask import Flask, render_template, request, redirect, url_for, session
-from arbol import Parqueadero, TARIFAS
+from tree import ParkingLot, RATES
 
 app = Flask(__name__)
-app.secret_key = "parqueadero-abb"  # necesario para mostrar mensajes entre páginas
-parqueadero = Parqueadero()
+app.secret_key = "parking-lot-bst"  # needed to show messages between page loads
+parking_lot = ParkingLot()
 
-# Placas colombianas: carro ABC123, moto ABC12D
-PATRONES = {"Carro": r"^[A-Z]{3}\d{3}$", "Moto": r"^[A-Z]{3}\d{2}[A-Z]$"}
+# Colombian plates: car ABC123, motorcycle ABC12D
+PLATE_PATTERNS = {"car": r"^[A-Z]{3}\d{3}$", "motorcycle": r"^[A-Z]{3}\d{2}[A-Z]$"}
 
-# Cupos disponibles por tipo de vehículo
-CAPACIDAD = {"Carro": 12, "Moto": 8}
+# Available spots per vehicle type
+CAPACITY = {"car": 12, "motorcycle": 8}
 
-
-def limpiar(placa):
-    return placa.strip().upper().replace("-", "").replace(" ", "")
-
-
-def avisar(texto, tipo="ok"):
-    """Guarda un mensaje para mostrarlo en la siguiente carga de la página."""
-    session["mensaje"] = {"texto": texto, "tipo": tipo}
+# Labels shown in the interface (Spanish)
+LABELS = {"car": "Carro", "motorcycle": "Moto"}
 
 
-def pesos(valor):
-    return "$" + f"{valor:,}".replace(",", ".")
+def clean_plate(plate):
+    return plate.strip().upper().replace("-", "").replace(" ", "")
+
+
+def notify(text, kind="ok"):
+    """Stores a message to show it on the next page load."""
+    session["message"] = {"text": text, "kind": kind}
+
+
+def format_money(value):
+    return "$" + f"{value:,}".replace(",", ".")
+
+
+def count_vehicles(vehicle_type):
+    return sum(1 for n in parking_lot.in_order(parking_lot.root, [])
+               if n.vehicle_type == vehicle_type)
 
 
 @app.route("/")
-def inicio():
-    raiz = parqueadero.root
-    vehiculos = [
-        {"placa": n.placa, "tipo": n.tipo,
-         "entrada": n.hora_entrada.strftime("%H:%M:%S"),
-         "nivel": parqueadero.nivel(n.placa)}
-        for n in parqueadero.in_order(raiz, [])
+def index():
+    root = parking_lot.root
+    vehicles = [
+        {"plate": n.plate, "vehicle_type": n.vehicle_type,
+         "entry_time": n.entry_time.strftime("%H:%M:%S"),
+         "level": parking_lot.level(n.plate)}
+        for n in parking_lot.in_order(root, [])
     ]
-    datos = {
-        "raiz": raiz.placa if raiz else "—",
-        "altura": parqueadero.altura(raiz),
-        "peso": parqueadero.peso(raiz),
-        "hojas": parqueadero.hojas(raiz, []),
-        "in_order": [n.placa for n in parqueadero.in_order(raiz, [])],
-        "pre_order": [n.placa for n in parqueadero.pre_order(raiz, [])],
-        "post_order": [n.placa for n in parqueadero.post_order(raiz, [])],
+    tree_data = {
+        "root": root.plate if root else "—",
+        "height": parking_lot.height(root),
+        "weight": parking_lot.weight(root),
+        "leaves": parking_lot.leaves(root, []),
+        "in_order": [n.plate for n in parking_lot.in_order(root, [])],
+        "pre_order": [n.plate for n in parking_lot.pre_order(root, [])],
+        "post_order": [n.plate for n in parking_lot.post_order(root, [])],
     }
-    ocupados = {t: sum(1 for v in vehiculos if v["tipo"] == t) for t in CAPACIDAD}
-    cupos = {t: {"ocupados": ocupados[t], "total": CAPACIDAD[t],
-                 "libres": CAPACIDAD[t] - ocupados[t],
-                 "porcentaje": round(ocupados[t] * 100 / CAPACIDAD[t]),
-                 "lista": [v for v in vehiculos if v["tipo"] == t]}
-             for t in CAPACIDAD}
+    spots = {}
+    for vehicle_type, total in CAPACITY.items():
+        parked = [v for v in vehicles if v["vehicle_type"] == vehicle_type]
+        spots[vehicle_type] = {
+            "occupied": len(parked), "total": total, "free": total - len(parked),
+            "percentage": round(len(parked) * 100 / total), "vehicles": parked,
+        }
     return render_template(
         "index.html",
-        cupos=cupos,
-        datos=datos,
-        vehiculos=vehiculos,
-        dibujo=parqueadero.posiciones(),
-        mensaje=session.pop("mensaje", None),
-        resultado=session.pop("resultado", None),
-        buscado=session.pop("buscado", None),
-        tarifas={k: pesos(v) for k, v in TARIFAS.items()},
+        spots=spots,
+        tree=tree_data,
+        vehicles=vehicles,
+        drawing=parking_lot.layout(),
+        labels=LABELS,
+        message=session.pop("message", None),
+        ticket=session.pop("ticket", None),
+        searched=session.pop("searched", None),
+        rates={k: format_money(v) for k, v in RATES.items()},
     )
 
 
-@app.route("/entrada", methods=["POST"])
-def entrada():
-    placa = limpiar(request.form.get("placa", ""))
-    tipo = request.form.get("tipo", "Carro")
+@app.route("/entry", methods=["POST"])
+def entry():
+    plate = clean_plate(request.form.get("plate", ""))
+    vehicle_type = request.form.get("vehicle_type", "car")
 
-    if tipo not in PATRONES:
-        avisar("Tipo de vehículo no válido.", "error")
-    elif not re.match(PATRONES[tipo], placa):
-        ejemplo = "ABC123" if tipo == "Carro" else "ABC12D"
-        avisar(f"Placa inválida para {tipo}. Ejemplo: {ejemplo}", "error")
-    elif sum(1 for n in parqueadero.in_order(parqueadero.root, []) if n.tipo == tipo) >= CAPACIDAD[tipo]:
-        avisar(f"No hay cupos disponibles para {tipo.lower()}s.", "error")
-    elif not parqueadero.insertar(placa, tipo):
-        avisar(f"El vehículo {placa} ya está en el parqueadero.", "error")
+    if vehicle_type not in PLATE_PATTERNS:
+        notify("Tipo de vehículo no válido.", "error")
+    elif not re.match(PLATE_PATTERNS[vehicle_type], plate):
+        example = "ABC123" if vehicle_type == "car" else "ABC12D"
+        notify(f"Placa inválida para {LABELS[vehicle_type]}. Ejemplo: {example}", "error")
+    elif count_vehicles(vehicle_type) >= CAPACITY[vehicle_type]:
+        notify(f"No hay cupos disponibles para {LABELS[vehicle_type].lower()}s.", "error")
+    elif not parking_lot.insert(plate, vehicle_type):
+        notify(f"El vehículo {plate} ya está en el parqueadero.", "error")
     else:
-        avisar(f"Entrada registrada: {placa} ({tipo}).")
-    return redirect(url_for("inicio"))
+        notify(f"Entrada registrada: {plate} ({LABELS[vehicle_type]}).")
+    return redirect(url_for("index"))
 
 
-@app.route("/buscar", methods=["POST"])
-def buscar():
-    placa = limpiar(request.form.get("placa", ""))
-    accion = request.form.get("accion", "buscar")
-    nodo = parqueadero.buscar(placa)
+@app.route("/search", methods=["POST"])
+def search():
+    plate = clean_plate(request.form.get("plate", ""))
+    action = request.form.get("action", "search")
+    node = parking_lot.search(plate)
 
-    if nodo is None:
-        avisar(f"{placa or 'La placa'} no está en el parqueadero.", "error")
-        return redirect(url_for("inicio"))
+    if node is None:
+        notify(f"{plate or 'La placa'} no está en el parqueadero.", "error")
+        return redirect(url_for("index"))
 
-    minutos, cobro = parqueadero.calcular_cobro(nodo)
+    minutes, fee = parking_lot.calculate_fee(node)
+    level = parking_lot.level(plate)
 
-    if accion == "salida":
-        parqueadero.eliminar(placa)
-        avisar(f"Salida de {placa}: {minutos} min. Total a pagar {pesos(cobro)}.")
+    if action == "exit":
+        parking_lot.delete(plate)
+        notify(f"Salida de {plate}: {minutes} min. Total a pagar {format_money(fee)}.")
     else:
-        session["buscado"] = placa
-        session["resultado"] = {
-            "placa": nodo.placa, "tipo": nodo.tipo,
-            "entrada": nodo.hora_entrada.strftime("%H:%M:%S"),
-            "nivel": parqueadero.nivel(placa),
-            "minutos": minutos, "cobro": pesos(cobro),
+        session["searched"] = plate
+        session["ticket"] = {
+            "plate": node.plate, "vehicle_type": node.vehicle_type,
+            "entry_time": node.entry_time.strftime("%H:%M:%S"),
+            "level": level, "minutes": minutes, "fee": format_money(fee),
         }
-        avisar(f"{placa} encontrado en el nivel {parqueadero.nivel(placa)} del árbol.")
-    return redirect(url_for("inicio"))
+        notify(f"{plate} encontrado en el nivel {level} del árbol.")
+    return redirect(url_for("index"))
 
 
 @app.route("/demo", methods=["POST"])
 def demo():
-    """Carga vehículos de ejemplo para la presentación."""
-    for placa, tipo in [("MNO456", "Carro"), ("FGH789", "Carro"), ("TUV321", "Carro"),
-                        ("CDE45A", "Moto"), ("JKL234", "Carro"), ("RST67B", "Moto"),
-                        ("XYZ890", "Carro")]:
-        parqueadero.insertar(placa, tipo)
-    avisar("Vehículos de ejemplo cargados.")
-    return redirect(url_for("inicio"))
+    """Loads sample vehicles for the presentation."""
+    for plate, vehicle_type in [("MNO456", "car"), ("FGH789", "car"), ("TUV321", "car"),
+                                ("CDE45A", "motorcycle"), ("JKL234", "car"),
+                                ("RST67B", "motorcycle"), ("XYZ890", "car")]:
+        parking_lot.insert(plate, vehicle_type)
+    notify("Vehículos de ejemplo cargados.")
+    return redirect(url_for("index"))
 
 
-@app.route("/vaciar", methods=["POST"])
-def vaciar():
-    parqueadero.root = None
-    avisar("Parqueadero vaciado.")
-    return redirect(url_for("inicio"))
+@app.route("/clear", methods=["POST"])
+def clear():
+    parking_lot.root = None
+    notify("Parqueadero vaciado.")
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":

@@ -1,36 +1,36 @@
-/* ===== Tema: parqueadero (asfalto, demarcación amarilla, placas colombianas) ===== */
+/* ===== Theme: parking lot (asphalt, yellow road markings, Colombian license plates) ===== */
 :root {
-  --asfalto: #1d2026;
-  --asfalto-2: #262a32;
+  --asphalt: #1d2026;
+  --asphalt-2: #262a32;
   --panel: #2c313a;
-  --linea: #3b414d;
-  --texto: #eef0f4;
-  --suave: #a3aab8;
-  --amarillo: #ffc82c;
-  --placa: #f7c600;
-  --azul-p: #1565d8;
-  --verde: #3ccf6e;
-  --rojo: #ff5a4e;
-  --naranja: #ff8a1f;
-  --raiz: #ffc82c;
-  --rama: #5fa8ff;
-  --hoja: #3ccf6e;
+  --line: #3b414d;
+  --text: #eef0f4;
+  --muted: #a3aab8;
+  --yellow: #ffc82c;
+  --plate-yellow: #f7c600;
+  --sign-blue: #1565d8;
+  --green: #3ccf6e;
+  --red: #ff5a4e;
+  --orange: #ff8a1f;
+  --root: #ffc82c;
+  --branch: #5fa8ff;
+  --leaf: #3ccf6e;
 }
 * { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  color: var(--texto);
+  color: var(--text);
   background:
     radial-gradient(circle at 20% 10%, rgba(255,255,255,.03), transparent 40%),
     repeating-linear-gradient(45deg, rgba(255,255,255,.012) 0 2px, transparent 2px 6px),
-    var(--asfalto);
+    var(--asphalt);
   min-height: 100vh;
 }
-h1, h2, h3, .numero, .placa-mini, .tiquete-cabeza, .logo-p { font-family: "Oswald", "Arial Narrow", sans-serif; }
+h1, h2, h3, .spot-number, .mini-plate, .ticket-header, .logo-p { font-family: "Oswald", "Arial Narrow", sans-serif; }
 
-/* ----- Letrero ----- */
-.letrero {
+/* ----- Sign ----- */
+.sign {
   display: flex; align-items: center; gap: 18px;
   padding: 18px 28px;
   background: linear-gradient(180deg, #14171c, #1b1f26);
@@ -38,27 +38,27 @@ h1, h2, h3, .numero, .placa-mini, .tiquete-cabeza, .logo-p { font-family: "Oswal
 .logo-p {
   width: 64px; height: 64px; flex-shrink: 0;
   display: grid; place-items: center;
-  background: var(--azul-p); color: white;
+  background: var(--sign-blue); color: white;
   font-size: 46px; font-weight: 700;
   border-radius: 12px; border: 4px solid white;
-  box-shadow: 0 0 0 3px var(--azul-p);
+  box-shadow: 0 0 0 3px var(--sign-blue);
 }
-.letrero h1 { margin: 0; font-size: 1.9rem; letter-spacing: 1px; text-transform: uppercase; }
-.letrero p { margin: 2px 0 0; color: var(--suave); }
-.estado-letrero {
+.sign h1 { margin: 0; font-size: 1.9rem; letter-spacing: 1px; text-transform: uppercase; }
+.sign p { margin: 2px 0 0; color: var(--muted); }
+.sign-status {
   margin-left: auto;
   font-family: "Oswald", sans-serif; letter-spacing: 1px;
-  background: #0d0f12; border: 1px solid var(--linea);
-  padding: 10px 16px; border-radius: 8px; color: var(--verde);
+  background: #0d0f12; border: 1px solid var(--line);
+  padding: 10px 16px; border-radius: 8px; color: var(--green);
   display: flex; align-items: center; gap: 10px; white-space: nowrap;
 }
-.luz { width: 12px; height: 12px; border-radius: 50%; }
-.luz.verde { background: var(--verde); box-shadow: 0 0 10px var(--verde); }
-.luz.roja { background: var(--rojo); box-shadow: 0 0 10px var(--rojo); }
-.estado-letrero:has(.roja) { color: var(--rojo); }
-.cinta {
+.light { width: 12px; height: 12px; border-radius: 50%; }
+.light.green { background: var(--green); box-shadow: 0 0 10px var(--green); }
+.light.red { background: var(--red); box-shadow: 0 0 10px var(--red); }
+.sign-status:has(.red) { color: var(--red); }
+.stripe {
   height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--amarillo) 0 18px, #111 18px 36px);
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 18px, #111 18px 36px);
 }
 
 /* ----- Layout ----- */
@@ -68,95 +68,95 @@ main {
 }
 .panel {
   background: var(--panel);
-  border: 1px solid var(--linea);
+  border: 1px solid var(--line);
   border-radius: 14px;
   padding: 20px;
 }
 h2 { margin: 0 0 14px; font-size: 1.15rem; letter-spacing: .5px; text-transform: uppercase; }
-h3 { margin: 18px 0 10px; font-size: .95rem; color: var(--suave); text-transform: uppercase; letter-spacing: 1px; }
-.fila { display: flex; gap: 8px; flex-wrap: wrap; }
-.titulo-fila { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
-.titulo-fila h2 { margin: 0; }
+h3 { margin: 18px 0 10px; font-size: .95rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.title-row h2 { margin: 0; }
 
-/* ----- Mensaje ----- */
-.mensaje {
+/* ----- Message ----- */
+.message {
   padding: 14px 18px; border-radius: 10px; font-weight: 600;
   border-left: 6px solid;
 }
-.mensaje.ok { background: rgba(60,207,110,.12); border-color: var(--verde); color: #b8f5cc; }
-.mensaje.error { background: rgba(255,90,78,.12); border-color: var(--rojo); color: #ffc4bf; }
+.message.ok { background: rgba(60,207,110,.12); border-color: var(--green); color: #b8f5cc; }
+.message.error { background: rgba(255,90,78,.12); border-color: var(--red); color: #ffc4bf; }
 
-/* ----- Íconos ----- */
-.icono { width: 46px; height: 23px; display: inline-block; vertical-align: middle; }
-.icono.grande { width: 110px; height: 55px; }
-.icono.tabla { width: 38px; height: 19px; }
-.icono .carroceria { fill: currentColor; }
-.icono .vidrio { fill: rgba(255,255,255,.55); }
-.icono .llanta { fill: #111; }
-.icono .rin { fill: #bbb; }
-.icono .chasis { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.carro .icono, .icono { color: var(--rama); }
-.moto .icono { color: var(--naranja); }
+/* ----- Icons ----- */
+.icon { width: 46px; height: 23px; display: inline-block; vertical-align: middle; }
+.icon.large { width: 110px; height: 55px; }
+.icon.mini { width: 38px; height: 19px; }
+.icon .body { fill: currentColor; }
+.icon .glass { fill: rgba(255,255,255,.55); }
+.icon .tire { fill: #111; }
+.icon .rim { fill: #bbb; }
+.icon .frame { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.car .icon, .icon { color: var(--branch); }
+.motorcycle .icon { color: var(--orange); }
 
-/* ----- Ocupación ----- */
-.ocupacion { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.medidor {
+/* ----- Occupancy ----- */
+.occupancy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.gauge {
   display: flex; align-items: center; gap: 14px;
-  background: var(--panel); border: 1px solid var(--linea);
+  background: var(--panel); border: 1px solid var(--line);
   border-radius: 14px; padding: 16px 18px;
 }
-.medidor .icono { width: 64px; height: 32px; }
-.medidor-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-.medidor-titulo { display: flex; justify-content: space-between; font-weight: 600; }
-.medidor-titulo b { font-family: "Oswald", sans-serif; font-size: 1.2rem; }
-.medidor small { color: var(--suave); }
-.barra { height: 10px; background: #1a1d23; border-radius: 6px; overflow: hidden; }
-.barra div { height: 100%; background: var(--verde); border-radius: 6px; }
-.moto .barra div { background: var(--naranja); }
-.carro .barra div { background: var(--rama); }
-.tarifa { border-style: dashed; border-color: var(--amarillo); }
-.tarifa .medidor-titulo b { color: var(--amarillo); }
+.gauge .icon { width: 64px; height: 32px; }
+.gauge-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.gauge-title { display: flex; justify-content: space-between; font-weight: 600; }
+.gauge-title b { font-family: "Oswald", sans-serif; font-size: 1.2rem; }
+.gauge small { color: var(--muted); }
+.bar { height: 10px; background: #1a1d23; border-radius: 6px; overflow: hidden; }
+.bar div { height: 100%; background: var(--green); border-radius: 6px; }
+.motorcycle .bar div { background: var(--orange); }
+.car .bar div { background: var(--branch); }
+.rates { border-style: dashed; border-color: var(--yellow); }
+.rates .gauge-title b { color: var(--yellow); }
 
-/* ----- Taquilla ----- */
-.taquilla { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-.flecha { color: var(--verde); }
-.salida-f { color: var(--rojo); display: inline-block; transform: scaleX(-1); }
+/* ----- Entry / exit booth ----- */
+.booth { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.arrow { color: var(--green); }
+.arrow-exit { color: var(--red); display: inline-block; transform: scaleX(-1); }
 
-.selector-tipo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.selector-tipo input { position: absolute; opacity: 0; pointer-events: none; }
-.selector-tipo span {
+.type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.type-selector input { position: absolute; opacity: 0; pointer-events: none; }
+.type-selector span {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 14px; border-radius: 10px; cursor: pointer;
-  background: var(--asfalto-2); border: 2px solid var(--linea);
-  font-weight: 600; color: var(--suave);
+  background: var(--asphalt-2); border: 2px solid var(--line);
+  font-weight: 600; color: var(--muted);
   transition: border-color .15s, color .15s;
 }
-.selector-tipo .icono { width: 70px; height: 35px; color: var(--suave); }
-.selector-tipo input:checked + span { border-color: var(--amarillo); color: var(--texto); background: rgba(255,200,44,.08); }
-.selector-tipo input:checked + span .icono { color: var(--amarillo); }
-.selector-tipo input:focus-visible + span { outline: 2px solid var(--amarillo); outline-offset: 2px; }
+.type-selector .icon { width: 70px; height: 35px; color: var(--muted); }
+.type-selector input:checked + span { border-color: var(--yellow); color: var(--text); background: rgba(255,200,44,.08); }
+.type-selector input:checked + span .icon { color: var(--yellow); }
+.type-selector input:focus-visible + span { outline: 2px solid var(--yellow); outline-offset: 2px; }
 
-/* Campo con forma de placa colombiana */
-.campo-placa {
+/* Input shaped like a Colombian license plate */
+.plate-field {
   position: relative;
-  background: var(--placa);
+  background: var(--plate-yellow);
   border: 4px solid #111; border-radius: 10px;
   padding: 6px 10px 18px;
   margin-bottom: 14px;
   box-shadow: inset 0 0 0 2px rgba(0,0,0,.25);
 }
-.campo-placa input {
+.plate-field input {
   width: 100%; border: none; background: transparent; outline: none;
   font-family: "Oswald", sans-serif; font-weight: 700;
   font-size: 2.4rem; letter-spacing: 6px; text-align: center;
   color: #111; text-transform: uppercase;
 }
-.campo-placa input::placeholder { color: rgba(0,0,0,.25); }
-.campo-placa small {
+.plate-field input::placeholder { color: rgba(0,0,0,.25); }
+.plate-field small {
   position: absolute; left: 0; right: 0; bottom: 3px;
   text-align: center; font-size: .65rem; letter-spacing: 4px; font-weight: 700; color: #111;
 }
-.campo-placa:focus-within { box-shadow: 0 0 0 3px var(--amarillo), inset 0 0 0 2px rgba(0,0,0,.25); }
+.plate-field:focus-within { box-shadow: 0 0 0 3px var(--yellow), inset 0 0 0 2px rgba(0,0,0,.25); }
 
 button {
   padding: 12px 18px; border: none; border-radius: 10px;
@@ -166,113 +166,113 @@ button {
 }
 button:hover { filter: brightness(1.1); }
 button:active { transform: translateY(1px); }
-.btn-entrada { width: 100%; background: var(--verde); color: #0b2b16; }
-.btn-buscar { flex: 1; background: var(--rama); }
-.btn-salida { flex: 1; background: var(--rojo); }
-.btn-sec { background: var(--asfalto-2); border: 1px solid var(--linea); padding: 9px 14px; font-size: .85rem; }
+.btn-entry { width: 100%; background: var(--green); color: #0b2b16; }
+.btn-search { flex: 1; background: var(--branch); }
+.btn-exit { flex: 1; background: var(--red); }
+.btn-secondary { background: var(--asphalt-2); border: 1px solid var(--line); padding: 9px 14px; font-size: .85rem; }
 
-/* Tiquete */
-.tiquete {
+/* Parking ticket */
+.ticket {
   margin-top: 16px;
   background: #f4f1e8; color: #222;
   border-radius: 10px; overflow: hidden;
   position: relative;
 }
-.tiquete::after {
+.ticket::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
   background: radial-gradient(circle at 6px 8px, var(--panel) 5px, transparent 5.5px) 0 0 / 14px 8px repeat-x;
 }
-.tiquete-cabeza {
-  background: #111; color: var(--amarillo);
+.ticket-header {
+  background: #111; color: var(--yellow);
   text-align: center; letter-spacing: 3px; padding: 6px;
 }
-.tiquete-cuerpo { padding: 14px 18px 22px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
-.tiquete-cuerpo .icono { color: #333; }
-.tiquete-cuerpo .placa-mini { justify-self: start; font-size: 1.3rem; }
-.tiquete dl { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 8px 0 0; border-top: 1px dashed #999; padding-top: 10px; }
-.tiquete dt { color: #666; }
-.tiquete dd { margin: 0; font-weight: 600; text-align: right; }
+.ticket-body { padding: 14px 18px 22px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
+.ticket-body .icon { color: #333; }
+.ticket-body .mini-plate { justify-self: start; font-size: 1.3rem; }
+.ticket dl { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 8px 0 0; border-top: 1px dashed #999; padding-top: 10px; }
+.ticket dt { color: #666; }
+.ticket dd { margin: 0; font-weight: 600; text-align: right; }
 .total { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px dashed #999; padding-top: 10px; margin-top: 4px; }
 .total b { font-family: "Oswald", sans-serif; font-size: 1.6rem; }
 
-/* Placa pequeña */
-.placa-mini {
+/* Small license plate */
+.mini-plate {
   display: inline-block;
-  background: var(--placa); color: #111;
+  background: var(--plate-yellow); color: #111;
   border: 2px solid #111; border-radius: 5px;
   padding: 1px 8px; font-weight: 700; letter-spacing: 2px; font-size: .9rem;
 }
 
-/* ----- Patio ----- */
-.patio {
+/* ----- Parking spots ----- */
+.lot {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   background: #22252c; border-radius: 10px; padding: 0 6px;
   border-top: 3px solid #fff; border-bottom: 3px solid #fff;
 }
-.patio.moto { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
-.cupo {
+.lot.motorcycle { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.spot {
   position: relative;
   min-height: 118px;
   border-left: 3px solid #fff;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
   padding: 22px 6px 10px;
 }
-.cupo:last-child { border-right: 3px solid #fff; }
-.numero { position: absolute; top: 6px; left: 8px; font-size: .75rem; color: var(--amarillo); letter-spacing: 1px; }
-.cupo .icono { width: 62px; height: 31px; }
-.cupo .hora { font-size: .7rem; color: var(--suave); }
-.libre-txt { font-family: "Oswald", sans-serif; color: #4d5462; letter-spacing: 3px; font-size: .85rem; }
-.cupo.libre { background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.02) 10px 20px); }
-.cupo.resaltado { background: rgba(255,138,31,.18); box-shadow: inset 0 0 0 2px var(--naranja); }
+.spot:last-child { border-right: 3px solid #fff; }
+.spot-number { position: absolute; top: 6px; left: 8px; font-size: .75rem; color: var(--yellow); letter-spacing: 1px; }
+.spot .icon { width: 62px; height: 31px; }
+.spot .time { font-size: .7rem; color: var(--muted); }
+.free-label { font-family: "Oswald", sans-serif; color: #4d5462; letter-spacing: 3px; font-size: .85rem; }
+.spot.free { background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.02) 10px 20px); }
+.spot.highlighted { background: rgba(255,138,31,.18); box-shadow: inset 0 0 0 2px var(--orange); }
 
-/* ----- Árbol ----- */
-.leyenda { display: flex; gap: 14px; flex-wrap: wrap; font-size: .85rem; color: var(--suave); }
-.leyenda i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; }
-.leyenda .raiz { background: var(--raiz); }
-.leyenda .rama { background: var(--rama); }
-.leyenda .hoja { background: var(--hoja); }
-.leyenda .buscado { background: var(--naranja); }
+/* ----- Tree ----- */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .85rem; color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; }
+.legend .root { background: var(--root); }
+.legend .branch { background: var(--branch); }
+.legend .leaf { background: var(--leaf); }
+.legend .searched { background: var(--orange); }
 
-.lienzo {
+.canvas {
   overflow-x: auto; text-align: center; margin: 14px 0;
   background: #22252c; border-radius: 10px; padding: 10px;
   background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
   background-size: 28px 28px;
 }
-.arista { stroke: #fff; stroke-width: 2.5; stroke-dasharray: 10 6; opacity: .7; }
-.nodo .marco { stroke-width: 0; }
-.nodo.raiz .marco { fill: var(--raiz); }
-.nodo.rama .marco { fill: var(--rama); }
-.nodo.hoja .marco { fill: var(--hoja); }
-.nodo.buscado .marco { fill: var(--naranja); filter: drop-shadow(0 0 8px var(--naranja)); }
-.nodo .placa { fill: var(--placa); stroke: #111; stroke-width: 2.5; }
-.placa-txt { text-anchor: middle; font-family: "Oswald", sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 1px; fill: #111; }
-.tipo-txt { text-anchor: middle; font-size: 8px; font-weight: 700; letter-spacing: 2px; fill: #333; }
-.vacio { text-align: center; color: var(--suave); padding: 30px; }
-.vacio .icono { color: var(--linea); }
+.edge { stroke: #fff; stroke-width: 2.5; stroke-dasharray: 10 6; opacity: .7; }
+.node .frame-box { stroke-width: 0; }
+.node.root .frame-box { fill: var(--root); }
+.node.branch .frame-box { fill: var(--branch); }
+.node.leaf .frame-box { fill: var(--leaf); }
+.node.searched .frame-box { fill: var(--orange); filter: drop-shadow(0 0 8px var(--orange)); }
+.node .plate { fill: var(--plate-yellow); stroke: #111; stroke-width: 2.5; }
+.plate-text { text-anchor: middle; font-family: "Oswald", sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 1px; fill: #111; }
+.type-text { text-anchor: middle; font-size: 8px; font-weight: 700; letter-spacing: 2px; fill: #333; }
+.empty { text-align: center; color: var(--muted); padding: 30px; }
+.empty .icon { color: var(--line); }
 
-.arbol-datos { display: grid; grid-template-columns: 1fr 1.6fr; gap: 16px; }
+.tree-data { display: grid; grid-template-columns: 1fr 1.6fr; gap: 16px; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stats div { background: var(--asfalto-2); border-radius: 10px; padding: 12px; text-align: center; }
-.stats b { display: block; font-family: "Oswald", sans-serif; font-size: 1.5rem; color: var(--amarillo); }
-.stats small { color: var(--suave); }
-.recorridos { background: var(--asfalto-2); border-radius: 10px; padding: 12px 16px; }
-.recorridos p { margin: 6px 0; word-break: break-word; color: var(--suave); }
-.recorridos b { display: inline-block; min-width: 90px; color: var(--texto); }
+.stats div { background: var(--asphalt-2); border-radius: 10px; padding: 12px; text-align: center; }
+.stats b { display: block; font-family: "Oswald", sans-serif; font-size: 1.5rem; color: var(--yellow); }
+.stats small { color: var(--muted); }
+.traversals { background: var(--asphalt-2); border-radius: 10px; padding: 12px 16px; }
+.traversals p { margin: 6px 0; word-break: break-word; color: var(--muted); }
+.traversals b { display: inline-block; min-width: 90px; color: var(--text); }
 
-/* ----- Tabla ----- */
+/* ----- Table ----- */
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--linea); }
-th { color: var(--suave); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; }
-tr.resaltado td { background: rgba(255,138,31,.12); }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; }
+tr.highlighted td { background: rgba(255,138,31,.12); }
 td:first-child { width: 50px; }
-.sin-datos { color: var(--suave); }
+.no-data { color: var(--muted); }
 
-footer { text-align: center; padding: 24px; color: var(--suave); font-size: .85rem; }
+footer { text-align: center; padding: 24px; color: var(--muted); font-size: .85rem; }
 
 /* ----- Responsive ----- */
 @media (max-width: 860px) {
-  .ocupacion, .taquilla, .arbol-datos { grid-template-columns: 1fr; }
-  .letrero { flex-wrap: wrap; padding: 16px; }
-  .estado-letrero { margin-left: 0; }
+  .occupancy, .booth, .tree-data { grid-template-columns: 1fr; }
+  .sign { flex-wrap: wrap; padding: 16px; }
+  .sign-status { margin-left: 0; }
 }

@@ -10,150 +10,150 @@
 </head>
 <body>
 
-{# ---------- Íconos reutilizables (SVG) ---------- #}
-{% macro icono_carro(clase="") -%}
-<svg class="icono {{ clase }}" viewBox="0 0 64 32" aria-hidden="true">
-  <path d="M6 22 L8 14 Q10 10 15 9 L22 4 Q25 2 30 2 L42 2 Q46 2 49 5 L54 10 Q60 11 61 16 L62 22 Z" class="carroceria"/>
-  <path d="M23 9 L28 4.5 L36 4.5 L36 9 Z M39 9 L39 4.5 L43 4.5 Q45 4.5 47 6.5 L49.5 9 Z" class="vidrio"/>
-  <circle cx="17" cy="23" r="6" class="llanta"/><circle cx="17" cy="23" r="2.5" class="rin"/>
-  <circle cx="50" cy="23" r="6" class="llanta"/><circle cx="50" cy="23" r="2.5" class="rin"/>
+{# ---------- Reusable icons (SVG) ---------- #}
+{% macro car_icon(extra_class="") -%}
+<svg class="icon {{ extra_class }}" viewBox="0 0 64 32" aria-hidden="true">
+  <path d="M6 22 L8 14 Q10 10 15 9 L22 4 Q25 2 30 2 L42 2 Q46 2 49 5 L54 10 Q60 11 61 16 L62 22 Z" class="body"/>
+  <path d="M23 9 L28 4.5 L36 4.5 L36 9 Z M39 9 L39 4.5 L43 4.5 Q45 4.5 47 6.5 L49.5 9 Z" class="glass"/>
+  <circle cx="17" cy="23" r="6" class="tire"/><circle cx="17" cy="23" r="2.5" class="rim"/>
+  <circle cx="50" cy="23" r="6" class="tire"/><circle cx="50" cy="23" r="2.5" class="rim"/>
 </svg>
 {%- endmacro %}
-{% macro icono_moto(clase="") -%}
-<svg class="icono {{ clase }}" viewBox="0 0 64 32" aria-hidden="true">
-  <circle cx="13" cy="22" r="8" class="llanta"/><circle cx="13" cy="22" r="3" class="rin"/>
-  <circle cx="51" cy="22" r="8" class="llanta"/><circle cx="51" cy="22" r="3" class="rin"/>
-  <path d="M13 22 L24 12 L38 12 L44 8 L48 8 L46 12 L51 22" class="chasis"/>
-  <path d="M22 12 Q28 6 38 9 L38 13 L24 14 Z" class="carroceria"/>
-  <path d="M44 8 L42 3 L47 3" class="chasis"/>
+{% macro motorcycle_icon(extra_class="") -%}
+<svg class="icon {{ extra_class }}" viewBox="0 0 64 32" aria-hidden="true">
+  <circle cx="13" cy="22" r="8" class="tire"/><circle cx="13" cy="22" r="3" class="rim"/>
+  <circle cx="51" cy="22" r="8" class="tire"/><circle cx="51" cy="22" r="3" class="rim"/>
+  <path d="M13 22 L24 12 L38 12 L44 8 L48 8 L46 12 L51 22" class="frame"/>
+  <path d="M22 12 Q28 6 38 9 L38 13 L24 14 Z" class="body"/>
+  <path d="M44 8 L42 3 L47 3" class="frame"/>
 </svg>
 {%- endmacro %}
-{% macro icono(tipo, clase="") -%}
-  {% if tipo == "Moto" %}{{ icono_moto(clase) }}{% else %}{{ icono_carro(clase) }}{% endif %}
+{% macro vehicle_icon(vehicle_type, extra_class="") -%}
+  {% if vehicle_type == "motorcycle" %}{{ motorcycle_icon(extra_class) }}{% else %}{{ car_icon(extra_class) }}{% endif %}
 {%- endmacro %}
 
-  <!-- Encabezado tipo letrero de parqueadero -->
-  <header class="letrero">
+  <!-- Header styled as a parking sign -->
+  <header class="sign">
     <div class="logo-p">P</div>
     <div>
       <h1>Parqueadero ABB</h1>
       <p>Control de vehículos por placa · Árbol Binario de Búsqueda</p>
     </div>
-    <div class="estado-letrero">
-      {% set libres = cupos.Carro.libres + cupos.Moto.libres %}
-      <span class="luz {{ 'roja' if libres == 0 else 'verde' }}"></span>
-      {{ 'LLENO' if libres == 0 else 'ABIERTO · ' ~ libres ~ ' cupos' }}
+    <div class="sign-status">
+      {% set free_spots = spots.car.free + spots.motorcycle.free %}
+      <span class="light {{ 'red' if free_spots == 0 else 'green' }}"></span>
+      {{ 'LLENO' if free_spots == 0 else 'ABIERTO · ' ~ free_spots ~ ' cupos' }}
     </div>
   </header>
-  <div class="cinta"></div>
+  <div class="stripe"></div>
 
   <main>
-    {% if mensaje %}
-      <div class="mensaje {{ mensaje.tipo }}">
-        <span>{{ '✔' if mensaje.tipo == 'ok' else '⚠' }}</span> {{ mensaje.texto }}
+    {% if message %}
+      <div class="message {{ message.kind }}">
+        <span>{{ '✔' if message.kind == 'ok' else '⚠' }}</span> {{ message.text }}
       </div>
     {% endif %}
 
-    <!-- ===== Ocupación ===== -->
-    <section class="ocupacion">
-      {% for tipo, c in cupos.items() %}
-        <div class="medidor {{ tipo|lower }}">
-          {{ icono(tipo) }}
-          <div class="medidor-info">
-            <div class="medidor-titulo">{{ tipo }}s <b>{{ c.ocupados }}/{{ c.total }}</b></div>
-            <div class="barra"><div style="width: {{ c.porcentaje }}%"></div></div>
-            <small>{{ c.libres }} cupos libres</small>
+    <!-- ===== Occupancy ===== -->
+    <section class="occupancy">
+      {% for vehicle_type, spot in spots.items() %}
+        <div class="gauge {{ vehicle_type }}">
+          {{ vehicle_icon(vehicle_type) }}
+          <div class="gauge-info">
+            <div class="gauge-title">{{ labels[vehicle_type] }}s <b>{{ spot.occupied }}/{{ spot.total }}</b></div>
+            <div class="bar"><div style="width: {{ spot.percentage }}%"></div></div>
+            <small>{{ spot.free }} cupos libres</small>
           </div>
         </div>
       {% endfor %}
-      <div class="medidor tarifa">
-        <div class="medidor-info">
-          <div class="medidor-titulo">Tarifas <b>por hora</b></div>
-          <small>Carro {{ tarifas.Carro }} · Moto {{ tarifas.Moto }}</small>
+      <div class="gauge rates">
+        <div class="gauge-info">
+          <div class="gauge-title">Tarifas <b>por hora</b></div>
+          <small>Carro {{ rates.car }} · Moto {{ rates.motorcycle }}</small>
           <small>Se cobra hora o fracción</small>
         </div>
       </div>
     </section>
 
-    <!-- ===== Taquilla: entrada y salida ===== -->
-    <section class="taquilla">
-      <div class="panel entrada">
-        <h2><span class="flecha">➜</span> Entrada de vehículo</h2>
-        <form action="{{ url_for('entrada') }}" method="post">
-          <div class="selector-tipo">
+    <!-- ===== Booth: entry and exit ===== -->
+    <section class="booth">
+      <div class="panel entry-panel">
+        <h2><span class="arrow">➜</span> Entrada de vehículo</h2>
+        <form action="{{ url_for('entry') }}" method="post">
+          <div class="type-selector">
             <label>
-              <input type="radio" name="tipo" value="Carro" checked>
-              <span>{{ icono_carro() }} Carro</span>
+              <input type="radio" name="vehicle_type" value="car" checked>
+              <span>{{ car_icon() }} Carro</span>
             </label>
             <label>
-              <input type="radio" name="tipo" value="Moto">
-              <span>{{ icono_moto() }} Moto</span>
+              <input type="radio" name="vehicle_type" value="motorcycle">
+              <span>{{ motorcycle_icon() }} Moto</span>
             </label>
           </div>
-          <div class="campo-placa">
-            <input name="placa" type="text" placeholder="ABC123" maxlength="7" required autocomplete="off">
+          <div class="plate-field">
+            <input name="plate" type="text" placeholder="ABC123" maxlength="7" required autocomplete="off">
             <small>COLOMBIA</small>
           </div>
-          <button type="submit" class="btn-entrada">Registrar entrada</button>
+          <button type="submit" class="btn-entry">Registrar entrada</button>
         </form>
       </div>
 
-      <div class="panel salida">
-        <h2><span class="flecha salida-f">➜</span> Consulta y salida</h2>
-        <form action="{{ url_for('buscar') }}" method="post">
-          <div class="campo-placa">
-            <input name="placa" type="text" placeholder="ABC123" maxlength="7" required autocomplete="off"
-                   value="{{ resultado.placa if resultado else '' }}">
+      <div class="panel exit-panel">
+        <h2><span class="arrow arrow-exit">➜</span> Consulta y salida</h2>
+        <form action="{{ url_for('search') }}" method="post">
+          <div class="plate-field">
+            <input name="plate" type="text" placeholder="ABC123" maxlength="7" required autocomplete="off"
+                   value="{{ ticket.plate if ticket else '' }}">
             <small>COLOMBIA</small>
           </div>
-          <div class="fila">
-            <button type="submit" name="accion" value="buscar" class="btn-buscar">Buscar</button>
-            <button type="submit" name="accion" value="salida" class="btn-salida">Cobrar y salir</button>
+          <div class="row">
+            <button type="submit" name="action" value="search" class="btn-search">Buscar</button>
+            <button type="submit" name="action" value="exit" class="btn-exit">Cobrar y salir</button>
           </div>
         </form>
 
-        {% if resultado %}
-          <div class="tiquete">
-            <div class="tiquete-cabeza">TIQUETE DE PARQUEO</div>
-            <div class="tiquete-cuerpo">
-              {{ icono(resultado.tipo, "grande") }}
-              <div class="placa-mini">{{ resultado.placa }}</div>
+        {% if ticket %}
+          <div class="ticket">
+            <div class="ticket-header">TIQUETE DE PARQUEO</div>
+            <div class="ticket-body">
+              {{ vehicle_icon(ticket.vehicle_type, "large") }}
+              <div class="mini-plate">{{ ticket.plate }}</div>
               <dl>
-                <dt>Tipo</dt><dd>{{ resultado.tipo }}</dd>
-                <dt>Entrada</dt><dd>{{ resultado.entrada }}</dd>
-                <dt>Tiempo</dt><dd>{{ resultado.minutos }} min</dd>
-                <dt>Nivel en árbol</dt><dd>{{ resultado.nivel }}</dd>
+                <dt>Tipo</dt><dd>{{ labels[ticket.vehicle_type] }}</dd>
+                <dt>Entrada</dt><dd>{{ ticket.entry_time }}</dd>
+                <dt>Tiempo</dt><dd>{{ ticket.minutes }} min</dd>
+                <dt>Nivel en árbol</dt><dd>{{ ticket.level }}</dd>
               </dl>
-              <div class="total">A pagar <b>{{ resultado.cobro }}</b></div>
+              <div class="total">A pagar <b>{{ ticket.fee }}</b></div>
             </div>
           </div>
         {% endif %}
       </div>
     </section>
 
-    <!-- ===== Patio de parqueo ===== -->
-    <section class="panel patio-panel">
-      <div class="titulo-fila">
+    <!-- ===== Parking spots ===== -->
+    <section class="panel lot-panel">
+      <div class="title-row">
         <h2>Patio de parqueo</h2>
-        <div class="fila">
-          <form action="{{ url_for('demo') }}" method="post"><button class="btn-sec">Cargar ejemplo</button></form>
-          <form action="{{ url_for('vaciar') }}" method="post"><button class="btn-sec">Vaciar patio</button></form>
+        <div class="row">
+          <form action="{{ url_for('demo') }}" method="post"><button class="btn-secondary">Cargar ejemplo</button></form>
+          <form action="{{ url_for('clear') }}" method="post"><button class="btn-secondary">Vaciar patio</button></form>
         </div>
       </div>
 
-      {% for tipo, c in cupos.items() %}
-        <h3>Zona {{ tipo|lower }}s</h3>
-        <div class="patio {{ tipo|lower }}">
-          {% for i in range(c.total) %}
-            {% set v = c.lista[i] if i < c.lista|length else None %}
-            <div class="cupo {{ 'ocupado' if v else 'libre' }} {{ 'resaltado' if v and v.placa == buscado else '' }}">
-              <span class="numero">{{ tipo[0] }}{{ '%02d' % (i + 1) }}</span>
-              {% if v %}
-                {{ icono(tipo) }}
-                <span class="placa-mini">{{ v.placa }}</span>
-                <span class="hora">{{ v.entrada }}</span>
+      {% for vehicle_type, spot in spots.items() %}
+        <h3>Zona {{ labels[vehicle_type]|lower }}s</h3>
+        <div class="lot {{ vehicle_type }}">
+          {% for i in range(spot.total) %}
+            {% set vehicle = spot.vehicles[i] if i < spot.vehicles|length else None %}
+            <div class="spot {{ 'occupied' if vehicle else 'free' }} {{ 'highlighted' if vehicle and vehicle.plate == searched else '' }}">
+              <span class="spot-number">{{ labels[vehicle_type][0] }}{{ '%02d' % (i + 1) }}</span>
+              {% if vehicle %}
+                {{ vehicle_icon(vehicle_type) }}
+                <span class="mini-plate">{{ vehicle.plate }}</span>
+                <span class="time">{{ vehicle.entry_time }}</span>
               {% else %}
-                <span class="libre-txt">LIBRE</span>
+                <span class="free-label">LIBRE</span>
               {% endif %}
             </div>
           {% endfor %}
@@ -161,75 +161,75 @@
       {% endfor %}
     </section>
 
-    <!-- ===== Árbol ===== -->
-    <section class="panel arbol-panel">
-      <div class="titulo-fila">
+    <!-- ===== Tree ===== -->
+    <section class="panel tree-panel">
+      <div class="title-row">
         <h2>Árbol binario de búsqueda (ordenado por placa)</h2>
-        <div class="leyenda">
-          <span><i class="raiz"></i>Raíz</span>
-          <span><i class="rama"></i>Rama</span>
-          <span><i class="hoja"></i>Hoja</span>
-          <span><i class="buscado"></i>Buscado</span>
+        <div class="legend">
+          <span><i class="root"></i>Raíz</span>
+          <span><i class="branch"></i>Rama</span>
+          <span><i class="leaf"></i>Hoja</span>
+          <span><i class="searched"></i>Buscado</span>
         </div>
       </div>
 
-      {% if dibujo.nodos %}
-        <div class="lienzo">
-          <svg width="{{ dibujo.ancho }}" height="{{ dibujo.alto }}" viewBox="0 0 {{ dibujo.ancho }} {{ dibujo.alto }}">
-            {% for l in dibujo.lineas %}
-              <line x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" class="arista"/>
+      {% if drawing.nodes %}
+        <div class="canvas">
+          <svg width="{{ drawing.width }}" height="{{ drawing.height }}" viewBox="0 0 {{ drawing.width }} {{ drawing.height }}">
+            {% for e in drawing.edges %}
+              <line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" class="edge"/>
             {% endfor %}
-            {% for n in dibujo.nodos %}
-              <g class="nodo {{ n.clase }} {% if n.placa == buscado %}buscado{% endif %}">
-                <rect x="{{ n.x - 50 }}" y="{{ n.y - 27 }}" width="100" height="54" rx="10" class="marco"/>
-                <rect x="{{ n.x - 44 }}" y="{{ n.y - 21 }}" width="88" height="42" rx="6" class="placa"/>
-                <text x="{{ n.x }}" y="{{ n.y + 4 }}" class="placa-txt">{{ n.placa }}</text>
-                <text x="{{ n.x }}" y="{{ n.y + 16 }}" class="tipo-txt">{{ n.tipo|upper }}</text>
+            {% for n in drawing.nodes %}
+              <g class="node {{ n.role }} {% if n.plate == searched %}searched{% endif %}">
+                <rect x="{{ n.x - 50 }}" y="{{ n.y - 27 }}" width="100" height="54" rx="10" class="frame-box"/>
+                <rect x="{{ n.x - 44 }}" y="{{ n.y - 21 }}" width="88" height="42" rx="6" class="plate"/>
+                <text x="{{ n.x }}" y="{{ n.y + 4 }}" class="plate-text">{{ n.plate }}</text>
+                <text x="{{ n.x }}" y="{{ n.y + 16 }}" class="type-text">{{ labels[n.vehicle_type]|upper }}</text>
               </g>
             {% endfor %}
           </svg>
         </div>
       {% else %}
-        <div class="vacio">
-          {{ icono_carro("grande") }}
+        <div class="empty">
+          {{ car_icon("large") }}
           <p>El patio está vacío. Registra la entrada de un vehículo o carga el ejemplo.</p>
         </div>
       {% endif %}
 
-      <div class="arbol-datos">
+      <div class="tree-data">
         <div class="stats">
-          <div><b>{{ datos.raiz }}</b><small>Raíz</small></div>
-          <div><b>{{ datos.peso }}</b><small>Peso</small></div>
-          <div><b>{{ datos.altura }}</b><small>Altura</small></div>
-          <div><b>{{ datos.hojas|length }}</b><small>Hojas</small></div>
+          <div><b>{{ tree.root }}</b><small>Raíz</small></div>
+          <div><b>{{ tree.weight }}</b><small>Peso</small></div>
+          <div><b>{{ tree.height }}</b><small>Altura</small></div>
+          <div><b>{{ tree.leaves|length }}</b><small>Hojas</small></div>
         </div>
-        <div class="recorridos">
-          <p><b>In-order</b> {{ datos.in_order|join(' → ') if datos.in_order else '—' }}</p>
-          <p><b>Pre-order</b> {{ datos.pre_order|join(' → ') if datos.pre_order else '—' }}</p>
-          <p><b>Post-order</b> {{ datos.post_order|join(' → ') if datos.post_order else '—' }}</p>
-          <p><b>Hojas</b> {{ datos.hojas|join(', ') if datos.hojas else '—' }}</p>
+        <div class="traversals">
+          <p><b>In-order</b> {{ tree.in_order|join(' → ') if tree.in_order else '—' }}</p>
+          <p><b>Pre-order</b> {{ tree.pre_order|join(' → ') if tree.pre_order else '—' }}</p>
+          <p><b>Post-order</b> {{ tree.post_order|join(' → ') if tree.post_order else '—' }}</p>
+          <p><b>Hojas</b> {{ tree.leaves|join(', ') if tree.leaves else '—' }}</p>
         </div>
       </div>
     </section>
 
-    <!-- ===== Registro ===== -->
+    <!-- ===== Vehicle log ===== -->
     <section class="panel">
       <h2>Registro de vehículos (recorrido in-order)</h2>
-      {% if vehiculos %}
+      {% if vehicles %}
         <table>
           <thead><tr><th></th><th>Placa</th><th>Tipo</th><th>Hora de entrada</th><th>Nivel</th></tr></thead>
           <tbody>
-            {% for v in vehiculos %}
-              <tr class="{{ 'resaltado' if v.placa == buscado else '' }}">
-                <td>{{ icono(v.tipo, "tabla") }}</td>
-                <td><span class="placa-mini">{{ v.placa }}</span></td>
-                <td>{{ v.tipo }}</td><td>{{ v.entrada }}</td><td>{{ v.nivel }}</td>
+            {% for v in vehicles %}
+              <tr class="{{ 'highlighted' if v.plate == searched else '' }}">
+                <td>{{ vehicle_icon(v.vehicle_type, "mini") }}</td>
+                <td><span class="mini-plate">{{ v.plate }}</span></td>
+                <td>{{ labels[v.vehicle_type] }}</td><td>{{ v.entry_time }}</td><td>{{ v.level }}</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
       {% else %}
-        <p class="sin-datos">No hay vehículos registrados.</p>
+        <p class="no-data">No hay vehículos registrados.</p>
       {% endif %}
     </section>
   </main>
